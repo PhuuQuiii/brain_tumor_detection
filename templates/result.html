@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediction Result</title>
+    <!-- Liên kết tới Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLR0xtLj1F5+s1lF3LrC5HCl/l1LKo/UR/LHwE5VZN"
+      crossorigin="anonymous"
+    />
+    <!-- Liên kết tới tệp styles.css -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- Bootstrap Container -->
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="result-container">
+            <h2>Prediction Results</h2>
+
+            <!-- Hiển thị ảnh -->
+            <img
+              src="{{ url_for('static', filename='uploads/' + image_name) }}"
+              alt="Brain MRI"
+              class="img-fluid mb-4"
+              width="400"
+            />
+
+            <h3>Prediction Probabilities:</h3>
+            <ul class="list-group mb-4">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                No Tumor: <strong>{{ results['No Tumor'] }}%</strong>
+              </li>
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                Glioma: <strong>{{ results['Glioma'] }}%</strong>
+              </li>
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                Meningioma: <strong>{{ results['Meningioma'] }}%</strong>
+              </li>
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                Pituitary: <strong>{{ results['Pituitary'] }}%</strong>
+              </li>
+            </ul>
+
+            <h3 class="text-success">
+              Final Prediction: <strong>{{ final_prediction }}</strong>
+            </h3>
+
+            <a href="{{ url_for('upload_image') }}" class="btn btn-custom mt-4"
+              >Go Back</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liên kết Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-m8v7DjvLbROrf5fUqD+otlp30HLjq6ahvS5moOWu3knVvMKHI47D6RYtvCUpxxhV"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Liên kết tới tệp scripts.js -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+  </body>
+</html>
