@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 from PIL import Image
 import numpy as np
 import os
-import tensorflow as tf
+from Predict import LoadModel, LoadImage, Prediction
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
@@ -11,43 +12,31 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 # model = tf.keras.models.load_model('E:/brain_tumor_detection/models/')
 
 # Tạm thời bỏ qua phần xử lý bằng mô hình, dùng dữ liệu giả để kiểm tra giao diện
-def predict_tumor(img_path):
-    # Trả về kết quả dự đoán giả
-    results = {
-        'No Tumor': 70.0,
-        'Glioma': 10.0,
-        'Meningioma': 15.0,
-        'Pituitary': 5.0
-    }
-    
-    # Kết quả giả: loại có phần trăm lớn nhất
-    final_prediction = max(results, key=results.get)
-    
-    return results, final_prediction
-
-# # Hàm dự đoán kết quả từ ảnh
 # def predict_tumor(img_path):
-#     img = Image.open(img_path).resize((150, 150))  # Giả sử model nhận ảnh 150x150
-#     img_array = np.array(img) / 255.0  # Chuẩn hóa ảnh
-#     img_array = np.expand_dims(img_array, axis=0)  # Thêm batch dimension
-    
-#     predictions = model.predict(img_array)[0]  # Lấy kết quả dự đoán
-#     no_tumor_prob = predictions[0]  # Xác suất không có u não
-#     glioma_prob = predictions[1]    # Xác suất glioma
-#     meningioma_prob = predictions[2] # Xác suất meningioma
-#     pituitary_prob = predictions[3]  # Xác suất pituitary
-
+#     # Trả về kết quả dự đoán giả
 #     results = {
-#         'No Tumor': no_tumor_prob * 100,
-#         'Glioma': glioma_prob * 100,
-#         'Meningioma': meningioma_prob * 100,
-#         'Pituitary': pituitary_prob * 100
+#         'No Tumor': 70.0,
+#         'Glioma': 10.0,
+#         'Meningioma': 15.0,
+#         'Pituitary': 5.0
 #     }
-
-#     # Kết quả cuối cùng là loại u não có phần trăm lớn nhất
+    
+#     # Kết quả giả: loại có phần trăm lớn nhất
 #     final_prediction = max(results, key=results.get)
     
 #     return results, final_prediction
+
+# Hàm dự đoán kết quả từ ảnh
+def predict_tumor(model_path, img_path):
+    model = LoadModel(model_path)
+
+    img_array = LoadImage(img_path)
+    results = Prediction(img_array, model)
+
+    # Kết quả cuối cùng là loại u não có phần trăm lớn nhất
+    final_prediction = max(results, key=results.get)
+    
+    return results, final_prediction
 
 # Route cho trang upload ảnh
 @app.route('/')
@@ -68,14 +57,21 @@ def predict():
     if file:
         # Lưu tệp ảnh vào thư mục static/uploads
         filename = file.filename
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], "tumor.png")
         file.save(file_path)
+
+        filename = "tumor.png"
         
         # Trả về kết quả dự đoán giả
-        results, final_prediction = predict_tumor(file_path)
+        results, final_prediction = predict_tumor(model_path="./models/BrainTumor_3.h5", img_path=file_path)
+
+        for data in results:
+            print(f"{data}: {results[data] * 100}%")
+
+        results_percent = {key: value * 100 for key, value in results.items()}
         
         # Sử dụng tên file để hiển thị ảnh đúng cách
-        return render_template('result.html', image_name=filename, results=results, final_prediction=final_prediction)
+        return render_template('result.html', image_name=filename, results=results_percent, final_prediction=final_prediction)
 
 
 if __name__ == "__main__":
