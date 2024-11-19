@@ -8,23 +8,7 @@ from Predict import LoadModel, LoadImage, Prediction
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-# Load mô hình u não đã được huấn luyện sẵn
-# model = tf.keras.models.load_model('E:/brain_tumor_detection/models/')
 
-# Tạm thời bỏ qua phần xử lý bằng mô hình, dùng dữ liệu giả để kiểm tra giao diện
-# def predict_tumor(img_path):
-#     # Trả về kết quả dự đoán giả
-#     results = {
-#         'No Tumor': 70.0,
-#         'Glioma': 10.0,
-#         'Meningioma': 15.0,
-#         'Pituitary': 5.0
-#     }
-    
-#     # Kết quả giả: loại có phần trăm lớn nhất
-#     final_prediction = max(results, key=results.get)
-    
-#     return results, final_prediction
 
 # Hàm dự đoán kết quả từ ảnh
 def predict_tumor(model_path, img_path):
